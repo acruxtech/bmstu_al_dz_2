@@ -67,7 +67,10 @@ std::string Calculator::_convert_to_postfix_notation(const std::string& source_s
             st.push(symbol);
         }
         else {
-            throw std::invalid_argument("unknown symbol in expression");
+            std::string message = "unknown symbol ";
+            message += symbol;
+            message += " in expression";
+            throw std::invalid_argument(message);
         }
     }
     while (st.size()) {
@@ -86,32 +89,32 @@ double Calculator::calc(const std::string& expression)
     for (int i = 0; i < postfix_expr.length(); i++)
     {
         char c = postfix_expr[i];
-				
-        if (std::isdigit(c))
+		
+        if (c == ' ') continue;
+        else if (std::isdigit(c))
         {
             std::string number = _get_number_from_str(postfix_expr, i);
             locals.push(std::stod(number));
         }
         else if (_operator_priorities.count(c))
         {
+            if (locals.empty()) throw std::invalid_argument("malformed expression");
             double last = locals.top();
             locals.pop();
-            if (c == '~')
-            {
-                locals.push(_execute('-', 0, last));
-                // std::cout << last << " - -> " << _execute('-', 0, last) << std::endl;
-                continue;
-            }
-            if (c == 's' or c == 'c' or c == 't' or c == 'g' or c == 'e') {
+            if (c == '~' or c == 's' or c == 'c' or c == 't' or c == 'g' or c == 'e') {
                 locals.push(_execute(c, last));
                 // std::cout << last << " " << c << " -> " << _execute(c, last) << std::endl;
                 continue;
             }
 
+            if (locals.empty()) throw std::invalid_argument("malformed expression");
             double first = locals.top();
             locals.pop();
             locals.push(_execute(c, first, last));		
             // std::cout << first << " " << c << " " << last << " -> " << _execute(c,first, last) << std::endl;
+        }
+        else if (c == '(' or c == ')') {
+            throw std::invalid_argument("brackets are placed incorrectly");
         }
     }
 		

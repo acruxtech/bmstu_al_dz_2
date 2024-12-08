@@ -37,6 +37,7 @@ private:
             case '-': return a - b;
             case '*': return a * b;
             case '/': return a / b;
+            case '~': return -a;
             case '^': return pow(a, b);
             case 's': return sin(a);
             case 'c': return cos(a);
